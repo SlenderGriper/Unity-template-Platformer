@@ -5,17 +5,13 @@ using UnityEngine;
 
 public class PlayerControl : MonoBehaviour {
     private float speed=0.2f,powerJump,timeJump;
-    private bool OnGround,jump,OneJump=false, recharge=false;
+    private bool OnGround,jump,OneJump=false, recharge=false,rotateRigth=true,rotateRigthCheck=true;
     public GameObject knife;
-    private SpriteRenderer Pl;
-    private Vector3 rotation;
-    private BoxCollider2D col;
+    private Vector3 rotation,scaleRotate;
     public Transform checkGround;
     public LayerMask layerGround;
     private void Start()
     {
-        Pl = GetComponent<SpriteRenderer>();
-        col = GetComponent<BoxCollider2D>();
 
     }
 
@@ -26,6 +22,7 @@ public class PlayerControl : MonoBehaviour {
         StopWalk();
         PressingTheButtonJump();
         ControleJump();
+        RotateControle();
         Console.Write(OnGround);
     }
 
@@ -93,9 +90,9 @@ public class PlayerControl : MonoBehaviour {
         if ( (Input.GetKey(KeyCode.A)) && !Full.stop)
         {
             transform.position = new Vector3(transform.position.x - speed, transform.position.y, transform.position.z);
-            Pl.flipX = true;
+            
             GetComponent<Animator>().SetBool("walk", true);
-            col.offset = new Vector2(0.24f, col.offset.y);
+            rotateRigth = false;
         }
     }
 
@@ -104,9 +101,9 @@ public class PlayerControl : MonoBehaviour {
         if ((Input.GetKey(KeyCode.D)) && !Full.stop)
         {
             transform.position = new Vector3(transform.position.x + speed, transform.position.y, transform.position.z);
-            Pl.flipX = false;
+            
             GetComponent<Animator>().SetBool("walk", true);
-            col.offset = new Vector2(-0.24f, col.offset.y);
+            rotateRigth = true;
         }
     }
     void coin()
@@ -140,7 +137,7 @@ void Attack()
     {
         if (Input.GetKey(KeyCode.J)) {
             Instantiate(knife);
-            if (Pl.flipX)
+            if (!rotateRigth)
             {
                 knife.GetComponent<Knife>().speed = -1f;
                 knife.GetComponent<Knife>().L = Vector2.left;
@@ -151,6 +148,16 @@ void Attack()
                 knife.GetComponent<Knife>().L = -Vector2.left;
             }
             knife.transform.position = transform.position;
+        }
+    }
+    void RotateControle()
+    {
+        if ((rotateRigth && !rotateRigthCheck)|| (!rotateRigth && rotateRigthCheck))
+        {
+            scaleRotate = transform.localScale;
+            scaleRotate.x = -scaleRotate.x;
+            transform.localScale = scaleRotate;
+            rotateRigthCheck = !rotateRigthCheck;
         }
     }
 }
